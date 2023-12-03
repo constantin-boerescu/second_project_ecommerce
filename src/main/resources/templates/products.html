@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Products</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/products">Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/new_product">New Product</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/select-customer">Select Customer</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/select-order">Select Order</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/order-details">Order Details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/all-orders">All Orders</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+    <div class="container mt-4">
+        <h2>Products</h2>
+        <table id="productsTable" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Catrgory</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        fetch('/api/products')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#productsTable tbody');
+                data.forEach(product => {
+                    let row = tableBody.insertRow();
+                    row.insertCell(0).innerHTML = `<a href="/product?id=${product.id}">${product.productName}</a>`;
+                    row.insertCell(1).innerHTML = product.price;
+                    row.insertCell(2).innerHTML = product.category;
+                    
+                });
+            })
+            .catch(error => console.error('Get products error:', error));
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

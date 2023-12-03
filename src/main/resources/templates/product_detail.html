@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/products">Products</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/new_product">New Product</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/select-customer">Select Customer</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/select-order">Select Order</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/order-details">Order Details</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/all-orders">All Orders</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 id="productName" class="card-title">Product Name</h2>
+                <h5><strong>Description:</strong> <span id="productDescription" class="card-text"></span></h5>
+                <p class="card-text"><strong>Price:</strong> <span id="productListPrice"></span></p>
+                <p class="card-text"><strong>Category:</strong> <span id="productCategory"></span></p>
+                <form id="addToOrderForm">
+                    <div class="form-group">
+                        <label for="addQuantity">Quantity</label>
+                        <input type="number" class="form-contol" id="addQuantity" required>
+                        <input type="hidden" id="productId" value="">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add to order</button>         
+                </form>
+            </div>
+        </div>
+        <a href="/products" class="btn btn-primary mt-3">Back to Products</a>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        if (productId) {
+            fetch(`/api/products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    document.getElementById('productId').value = product.id;
+                    document.getElementById('productName').textContent = product.productName;
+                    document.getElementById('productDescription').textContent = product.description;
+                    document.getElementById('productListPrice').textContent = product.price;
+                    document.getElementById('productCategory').textContent = product.category;
+                })
+                .catch(error => console.error('An error has occured:', error));
+        }
+
+        document.getElementById('addToOrderForm').addEventListener('submit', function(event){
+            event.preventDefault();
+            
+            const quantity = document.getElementById("addQuantity").value;
+            const productId = document.getElementById("productId").value;
+            const orderId = localStorage.getItem("selectedOrderId");
+
+            const formData = {
+                order: {"id": orderId},
+                product: {"id": productId},
+                quantity: quantity,
+            };
+
+            fetch('api/order-item', {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('Product added to order!');
+                } else {
+                    alert('Failed to add product to order!');
+                }
+            })
+            .catch(error => {
+                console.error('An error has occured', error);
+            });
+        });
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
